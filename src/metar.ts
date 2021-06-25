@@ -1,7 +1,4 @@
 /**
- * # METAR
- * 🌦 A TypeScript library for processing METAR weather data.
- * 
  * @module
  * @author Will Barkoff <william@barkoffusa.com>
  * @license MIT

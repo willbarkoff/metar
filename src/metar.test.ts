@@ -13,6 +13,7 @@ const kjfkCOR = "KJFK 250251Z COR 08006KT 10SM BKN043 BKN095 BKN250 19/09 A3034 
 
 const kjfkCalm = "METAR KJFK 250251Z 00000KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
 const kjfkVrb = "METAR KJFK 250251Z VRB06KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+const kjfkVrbG6 = "METAR KJFK 250251Z 21010KT 180V240 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
 
 describe("METAR vs. SPECI", () => {
 	it("should know that a METAR is a routine observation", () => {
@@ -82,10 +83,28 @@ describe("Wind parsing", () => {
 		const calm = parseMETAR(kjfkCalm);
 		expect(calm.wind.calm).to.equal(true);
 		expect(calm.wind.direction).to.equal("calm");
+		expect(calm.wind.variance).to.equal(null);
+		expect(calm.wind.speed).to.equal(0);
+	});
+
+	it("should parse winds without gusts", () => {
+		const kjfk = parseMETAR(kjfkMETAR);
+		expect(kjfk.wind.calm).to.equal(false);
+		expect(kjfk.wind.variance).to.equal(null);
+		expect(kjfk.wind.direction).to.equal(80);
+		expect(kjfk.wind.speed).to.equal(6);
 	});
 
 	it("should parse variable direction winds (<=6kts)", () => {
 		const vrb = parseMETAR(kjfkVrb);
 		expect(vrb.wind.direction).to.equal("variable");
+		expect(vrb.wind.variance).to.equal(null);
+		expect(vrb.wind.speed).to.equal(6);
+	});
+
+	it("should parse variable direction winds (>6kts)", () => {
+		const vrbG6 = parseMETAR(kjfkVrbG6);
+		expect(vrbG6.wind.direction).to.equal(210);
+		expect(vrbG6.wind.variance).to.deep.equal([180, 240]);
 	});
 });

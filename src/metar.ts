@@ -1,5 +1,6 @@
 /**
- * @module
+ * @packageDocumentation
+ * 
  * @author Will Barkoff <william@barkoffusa.com>
  * @license MIT
  * 
@@ -43,6 +44,17 @@ export type Wind = {
 	 * `direction` is the direction, in degrees, that the wind is blowing. If winds are calm, the direction is `-1`.
 	 */
 	direction: WindDirection
+
+	/**
+	 * `variance` is the directional variance of the wind. If a directional variance is not specified, it is `null`.
+	 * Otherwise, it is the 
+	 */
+	variance: null | [number, number]
+
+	/**
+	 * `speed` is the wind speed.
+	 */
+	speed: number
 }
 
 export type METAR = {
@@ -116,7 +128,8 @@ export function parseMETAR(metarStr: string): METAR {
 	strSegments.shift();
 
 	// next, we'll take the time
-	const [, dayStr, hourStr, minuteStr] = strSegments[0].match(/(\d\d)(\d\d)(\d\d)Z/) || [-1, -1, -1, -1];
+	const [, dayStr, hourStr, minuteStr] = strSegments[0].match(/(\d\d)(\d\d)(\d\d)Z/)
+		|| /* istanbul ignore next */[-1, -1, -1, -1];
 	const time = {
 		day: parseInt(dayStr as string),
 		hour: parseInt(hourStr as string),
@@ -140,7 +153,9 @@ export function parseMETAR(metarStr: string): METAR {
 
 	let calm = false;
 	let direction: WindDirection = 0;
+	let speed = 0;
 
+	// istanbul ignore next, because right now we aren't testing invalid METARS
 	if (!windMatches) {
 		throw new Error(`METARError: Expected winds group, got ${strSegments[0]}`);
 	}
@@ -154,7 +169,20 @@ export function parseMETAR(metarStr: string): METAR {
 		direction = parseInt(windMatches[4]);
 	}
 
-	const wind: Wind = { calm, direction };
+	if (!calm) {
+		speed = parseInt(windMatches[6]);
+	}
+
+	let variance: [number, number] | null = null;
+	const varianceMatches = strSegments[1].match(/(\d{3})V(\d{3})/);
+	if (varianceMatches && strSegments[1] == varianceMatches[0]) {
+		// we have a variance clause
+		variance = [parseInt(varianceMatches[1]), parseInt(varianceMatches[2])];
+
+		strSegments.shift();
+	}
+
+	const wind: Wind = { calm, direction, variance, speed };
 
 	return { type, stationIdentifier, time, respectModifier, wind };
 }

@@ -13,7 +13,7 @@ const kjfkCOR = "KJFK 250251Z COR 08006KT 10SM BKN043 BKN095 BKN250 19/09 A3034 
 
 const kjfkCalm = "METAR KJFK 250251Z 00000KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
 const kjfkVrb = "METAR KJFK 250251Z VRB06KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
-const kjfkVrbG6 = "METAR KJFK 250251Z 21010KT 180V240 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+const kjfkVrbG6 = "METAR KJFK 250251Z 21010G10KT 180V240 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
 
 describe("METAR vs. SPECI", () => {
 	it("should know that a METAR is a routine observation", () => {
@@ -106,5 +106,10 @@ describe("Wind parsing", () => {
 		const vrbG6 = parseMETAR(kjfkVrbG6);
 		expect(vrbG6.wind.direction).to.equal(210);
 		expect(vrbG6.wind.variance).to.deep.equal([180, 240]);
+	});
+
+	it("should handle gusts properly", () => {
+		const vrbG6 = parseMETAR(kjfkVrbG6);
+		expect(vrbG6.wind.gust).to.equal(10);
 	});
 });

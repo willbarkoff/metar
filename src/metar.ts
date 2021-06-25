@@ -55,6 +55,11 @@ export type Wind = {
 	 * `speed` is the wind speed.
 	 */
 	speed: number
+
+	/**
+	 * `guest` represents the gust speed of the wind.
+	 */
+	gust: number
 }
 
 export type METAR = {
@@ -154,6 +159,7 @@ export function parseMETAR(metarStr: string): METAR {
 	let calm = false;
 	let direction: WindDirection = 0;
 	let speed = 0;
+	let gust = 0;
 
 	// istanbul ignore next, because right now we aren't testing invalid METARS
 	if (!windMatches) {
@@ -171,6 +177,7 @@ export function parseMETAR(metarStr: string): METAR {
 
 	if (!calm) {
 		speed = parseInt(windMatches[6]);
+		gust = parseInt(windMatches[8]);
 	}
 
 	let variance: [number, number] | null = null;
@@ -182,7 +189,7 @@ export function parseMETAR(metarStr: string): METAR {
 		strSegments.shift();
 	}
 
-	const wind: Wind = { calm, direction, variance, speed };
+	const wind: Wind = { calm, direction, variance, speed, gust };
 
 	return { type, stationIdentifier, time, respectModifier, wind };
 }

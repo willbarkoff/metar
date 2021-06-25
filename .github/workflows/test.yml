@@ -28,6 +28,5 @@ jobs:
 
       - name: "Run tests & check coverage"
         run: yarn coverage
-
-      - name: "Report coverage"
-        uses: romeovs/lcov-reporter-action@v0.2.21
+      # - name: "Report coverage"
+      #   uses: romeovs/lcov-reporter-action@v0.2.21

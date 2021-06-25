@@ -4,10 +4,12 @@
   "check-coverage": true,
   "exclude": [
     "docs",
-    "coverage"
+    "coverage",
+    ".eslintrc.js"
   ],
   "reporter": [
     "text",
-    "html"
+    "html",
+    "lcov"
   ]
 }

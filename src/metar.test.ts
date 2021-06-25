@@ -8,6 +8,9 @@ const kjfkMETAR = "METAR KJFK 250251Z 08006KT 10SM BKN043 BKN095 BKN250 19/09 A3
 const kjfkSPECI = "SPECI KJFK 250251Z 08006KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
 const kjfkUndef = "KJFK 250251Z 08006KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
 
+const kjfkAUTO = "KJFK 250251Z AUTO 08006KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+const kjfkCOR = "KJFK 250251Z COR 08006KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+
 const kjfkCalm = "METAR KJFK 250251Z 00000KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
 const kjfkVrb = "METAR KJFK 250251Z VRB06KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
 
@@ -54,6 +57,23 @@ describe("Time parsing", () => {
 		const undef = parseMETAR(kjfkUndef);
 
 		expect(metar.time).to.deep.equal(undef.time);
+	});
+});
+
+describe("Respect modifiers", () => {
+	it("should handle reports without a respect modifier", () => {
+		const kjfk = parseMETAR(kjfkMETAR);
+		expect(kjfk.respectModifier).to.equal("unknown");
+	});
+
+	it("should handle corrected reports", () => {
+		const kjfkCor = parseMETAR(kjfkCOR);
+		expect(kjfkCor.respectModifier).to.equal("correction");
+	});
+
+	it("should handle automatic reports", () => {
+		const kjfkAuto = parseMETAR(kjfkAUTO);
+		expect(kjfkAuto.respectModifier).to.equal("automatic");
 	});
 });
 

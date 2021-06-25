@@ -1,0 +1,6 @@
+{
+	"entryPoints": [
+		"src/metar.ts"
+	],
+	"theme": "minimal"
+}

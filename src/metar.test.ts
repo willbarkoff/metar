@@ -1,0 +1,71 @@
+import { parseMETAR } from "./metar";
+
+import * as chai from "chai";
+
+const expect = chai.expect;
+
+const kjfkMETAR = "METAR KJFK 250251Z 08006KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+const kjfkSPECI = "SPECI KJFK 250251Z 08006KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+const kjfkUndef = "KJFK 250251Z 08006KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+
+const kjfkCalm = "METAR KJFK 250251Z 00000KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+const kjfkVrb = "METAR KJFK 250251Z VRB06KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+
+describe("METAR vs. SPECI", () => {
+	it("should know that a METAR is a routine observation", () => {
+		const metar = parseMETAR(kjfkMETAR);
+		expect(metar.type).to.equal("routine", "METAR");
+	});
+
+	it("should know that a SPECI is a condition-based or special forecast", () => {
+		const speci = parseMETAR(kjfkSPECI);
+		expect(speci.type).to.equal("special", "SPECI");
+	});
+
+	it("should handle a truncated format", () => {
+		const undef = parseMETAR(kjfkUndef);
+		expect(undef.type).to.equal("unknown", "Unspecified");
+	});
+});
+
+describe("Station identifier", () => {
+	it("should know the station identifier", () => {
+		const metar = parseMETAR(kjfkMETAR);
+		expect(metar.stationIdentifier).to.equal("KJFK");
+	});
+
+	it("should know the station identifier, even if the report type is unspecified", () => {
+		const metar = parseMETAR(kjfkUndef);
+		expect(metar.stationIdentifier).to.equal("KJFK");
+	});
+});
+
+describe("Time parsing", () => {
+	it("should parse times correctly", () => {
+		const metar = parseMETAR(kjfkMETAR);
+
+		expect(metar.time.day).to.equal(25);
+		expect(metar.time.hour).to.equal(2);
+		expect(metar.time.minute).to.equal(51);
+	});
+
+	it("should parse time even if the report type is unspecified", () => {
+		const metar = parseMETAR(kjfkMETAR);
+		const undef = parseMETAR(kjfkUndef);
+
+		expect(metar.time).to.deep.equal(undef.time);
+	});
+});
+
+describe("Wind parsing", () => {
+	it("should parse calm winds", () => {
+		const calm = parseMETAR(kjfkCalm)
+		expect(calm.wind.calm).to.equal(true)
+		expect(calm.wind.direction).to.equal("calm")
+	})
+
+	it("should parse variable direction winds (<=6kts)", () => {
+		const vrb = parseMETAR(kjfkVrb)
+		expect(vrb.wind.direction).to.equal("variable")
+	})
+})

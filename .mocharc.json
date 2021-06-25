@@ -1,0 +1,17 @@
+{
+	"reporter": "spec",
+	"require": "ts-node/register",
+	"spec": "src/**/*.test.ts",
+	"ui": "bdd",
+	"package": "./package.json",
+	"watchIgnore": [
+		"node_modules",
+		".git",
+		"docs",
+		"coverage",
+		".nycoutput"
+	],
+	"watchFiles": [
+		"src/**"
+	]
+}

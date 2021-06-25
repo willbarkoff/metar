@@ -1,0 +1,33 @@
+{
+  "name": "metar",
+  "description": "🌦 A TypeScript library for processing METAR weather data ",
+  "version": "0.1.0",
+  "main": "index.js",
+  "repository": "git@github.com:willbarkoff/metar.git",
+  "author": "William Barkoff <william@barkoffusa.com>",
+  "license": "MIT",
+  "scripts": {
+    "doc": "typedoc",
+    "doc:watch": "typedoc --watch",
+    "test": "mocha",
+    "test:watch": "mocha --watch --watch-extensions ts --watch --reporter min",
+    "coverage": "nyc mocha",
+    "lint": "eslint --ext ts . ",
+    "lint:fix": "eslint --ext ts . --fix"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@types/chai": "^4.2.19",
+    "@types/mocha": "^8.2.2",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
+    "@typescript-eslint/parser": "^4.28.0",
+    "chai": "^4.3.4",
+    "eslint": "^7.29.0",
+    "mocha": "^9.0.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^10.0.0",
+    "typedoc": "^0.21.0",
+    "typescript": "^4.3.4"
+  }
+}

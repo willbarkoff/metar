@@ -59,13 +59,13 @@ describe("Time parsing", () => {
 
 describe("Wind parsing", () => {
 	it("should parse calm winds", () => {
-		const calm = parseMETAR(kjfkCalm)
-		expect(calm.wind.calm).to.equal(true)
-		expect(calm.wind.direction).to.equal("calm")
-	})
+		const calm = parseMETAR(kjfkCalm);
+		expect(calm.wind.calm).to.equal(true);
+		expect(calm.wind.direction).to.equal("calm");
+	});
 
 	it("should parse variable direction winds (<=6kts)", () => {
-		const vrb = parseMETAR(kjfkVrb)
-		expect(vrb.wind.direction).to.equal("variable")
-	})
-})
+		const vrb = parseMETAR(kjfkVrb);
+		expect(vrb.wind.direction).to.equal("variable");
+	});
+});

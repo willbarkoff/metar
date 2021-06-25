@@ -126,38 +126,38 @@ export function parseMETAR(metarStr: string): METAR {
 		minute: parseInt(minuteStr as string)
 	};
 
-	strSegments.shift()
+	strSegments.shift();
 
 	// up next is the automatic identifier
-	let respectModifier: RespectModifier = "unknown"
+	let respectModifier: RespectModifier = "unknown";
 	if (strSegments[0] == "AUTO") {
-		respectModifier = "automatic"
-		strSegments.shift()
+		respectModifier = "automatic";
+		strSegments.shift();
 	} else if (strSegments[0] == "COR") {
-		respectModifier = "correction"
-		strSegments.shift()
+		respectModifier = "correction";
+		strSegments.shift();
 	}
 
-	const windRegex = /(((00000)|((\d{3}|VRB))(\d{2,3})(G(\d{2,3}))?))KT/
-	const windMatches = strSegments[0].match(windRegex)
+	const windRegex = /(((00000)|((\d{3}|VRB))(\d{2,3})(G(\d{2,3}))?))KT/;
+	const windMatches = strSegments[0].match(windRegex);
 
-	let calm = false
-	let direction: WindDirection = 0
+	let calm = false;
+	let direction: WindDirection = 0;
 
 	if (!windMatches) {
-		throw new Error(`METARError: Expected winds group, got ${strSegments[0]}`)
+		throw new Error(`METARError: Expected winds group, got ${strSegments[0]}`);
 	}
 
 	if (windMatches[0] == "00000KT") {
-		calm = true
-		direction = "calm"
+		calm = true;
+		direction = "calm";
 	} else if (windMatches[4] == "VRB") {
-		direction = "variable"
+		direction = "variable";
 	} else {
-		direction = parseInt(windMatches[4])
+		direction = parseInt(windMatches[4]);
 	}
 
-	const wind: Wind = { calm, direction }
+	const wind: Wind = { calm, direction };
 
 	return { type, stationIdentifier, time, respectModifier, wind };
 }

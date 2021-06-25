@@ -13,7 +13,8 @@
     "test:watch": "mocha --watch --watch-extensions ts --watch --reporter min",
     "coverage": "nyc mocha",
     "lint": "eslint --ext ts . ",
-    "lint:fix": "eslint --ext ts . --fix"
+    "lint:fix": "eslint --ext ts . --fix",
+    "build": "tsc"
   },
   "dependencies": {},
   "devDependencies": {

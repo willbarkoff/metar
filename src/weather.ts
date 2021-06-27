@@ -1,3 +1,4 @@
+export const weatherRegEx = /(-|\+|VC)?(MI|PR|BC|DR|BL|SH|TS|FZ)?(DZ|RA|SN|SG|IC|PL|GR|GS|UP)?(BR|FG|FU|VA|DU|SA|HZ|PY)?(PO|SQ|FC|SS|DS)?/;
 export enum PhenomenaIntensity {
 	Light = "light",
 	Moderate = "moderate",

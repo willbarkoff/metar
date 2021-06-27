@@ -248,6 +248,9 @@ export function parseMETAR(metarStr: string): METAR {
 		visibility = parseInt(visMatches[8]) + (parseInt(visMatches[9]) / parseInt(visMatches[10]));
 	}
 
+	//runway visibility groups
+
+
 
 	return { type, stationIdentifier, time, respectModifier, wind, visibility, visibilityLessThan };
 }

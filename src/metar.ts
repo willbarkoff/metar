@@ -7,11 +7,15 @@
  * @see https://www.icams-portal.gov/publications/fmh/FMH1/FMH1.pdf _Federal Meteorological Handbook No. 1: Surface Weather Observations and Reports_, referred to as FMH1.
  */
 
+export { PhenomenaDescriptor, PhenomenaIntensity, Precipitation, Obscuration, WeatherPhenomena } from "./weather";
+import { intensities, descriptors, precipitations, obscurations, phenomenon } from "./weather";
+
 /**
  * WindDirection represents a direction of the wind. It is normally a number representing the direction of the wind in degrees.
  * It can also be `"calm"` if there are no winds, or `"variable"` if winds are variable but under 6 knots.
  */
 export type WindDirection = number | "calm" | "variable"
+
 export type ReportTime = {
 	/**
 	 * `day` represents the day of the month of the report, in UTC.

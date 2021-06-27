@@ -15,6 +15,10 @@ const kjfkCalm = "METAR KJFK 250251Z 00000KT 10SM BKN043 BKN095 BKN250 19/09 A30
 const kjfkVrb = "METAR KJFK 250251Z VRB06KT 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
 const kjfkVrbG6 = "METAR KJFK 250251Z 21010G10KT 180V240 10SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
 
+const kjfkMinVis = "METAR KJFK 250251Z 21010G10KT 180V240 M1/4SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+const kjfkLowVis = "METAR KJFK 250251Z 21010G10KT 180V240 1/4SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+const kjfkMixVis = "METAR KJFK 250251Z 21010G10KT 180V240 1 5/16SM BKN043 BKN095 BKN250 19/09 A3034 RMK AO2 SLP273 T01890094 50001";
+
 describe("METAR vs. SPECI", () => {
 	it("should know that a METAR is a routine observation", () => {
 		const metar = parseMETAR(kjfkMETAR);
@@ -111,5 +115,30 @@ describe("Wind parsing", () => {
 	it("should handle gusts properly", () => {
 		const vrbG6 = parseMETAR(kjfkVrbG6);
 		expect(vrbG6.wind.gust).to.equal(10);
+	});
+});
+
+describe("visibilityParsing", () => {
+	it("should know when the visibility is less than a number", () => {
+		const minVis = parseMETAR(kjfkMinVis);
+		const lowVis = parseMETAR(kjfkLowVis);
+		expect(minVis.visibilityLessThan).to.equal(true);
+		expect(lowVis.visibilityLessThan).to.equal(false);
+		expect(minVis.visibility).to.equal(lowVis.visibility);
+	});
+
+	it("should parse whole number visibilities correctly", () => {
+		const vis = parseMETAR(kjfkMETAR);
+		expect(vis.visibility).to.equal(10);
+	});
+
+	it("should parse fractional visibilities correctly", () => {
+		const lowVis = parseMETAR(kjfkLowVis);
+		expect(lowVis.visibility).to.equal(1 / 4);
+	});
+
+	it("should parse mixed number visibilities correctly", () => {
+		const mixVis = parseMETAR(kjfkMixVis);
+		expect(mixVis.visibility).to.equal(21 / 16);
 	});
 });

@@ -106,6 +106,24 @@ export type METAR = {
 	 * @see FMH1 section 12.6.5
 	 */
 	wind: Wind
+
+	/**
+	 * `visibility` represents the visibility at the time of the report. It is reported in statue miles (SM).
+	 * 
+	 * @see FMH1 section 12.6.6
+	 * @see FMH1 table 12-1
+	 * @see FMH1 chapter 6
+	 */
+	visibility: number
+
+	/**
+	 * `visibilityLessThan` represents how the {@link visibility} should be understood. If it is `true`, then the 
+	 * visibility is less than the number reported in {@link visibility}, otherwise, it is equal to it.
+	 * 
+	 * @see FMH1 section 12.6.6
+	 * @see FMH1 chapter 6
+	 */
+	visibilityLessThan: boolean
 }
 
 /**
@@ -189,7 +207,43 @@ export function parseMETAR(metarStr: string): METAR {
 		strSegments.shift();
 	}
 
+	strSegments.shift();
+
 	const wind: Wind = { calm, direction, variance, speed, gust };
 
-	return { type, stationIdentifier, time, respectModifier, wind };
+	// visibility
+
+	let visibilityClause = "";
+	let visibility = 0;
+	while (!visibilityClause?.endsWith("SM")) {
+		visibilityClause += " " + strSegments.shift();
+		if (strSegments.length == 0) {
+			throw new Error(`METARError: Expected visibility clause, got end of report (while reading ${visibilityClause}).`);
+		}
+	}
+
+	const visMatches = visibilityClause.match(/(M)?((\d+)|((\d{1,2})\/(\d{1,2}))|((\d+) (\d{1,2})\/(\d{1,2})))SM/);
+
+	if (!visMatches) {
+		throw new Error(`METARError: Invalid visibility specification: ${visibilityClause}`);
+	}
+
+	const visibilityLessThan = visMatches[1] == "M";
+
+	if (visMatches[3]) {
+		// SCENERIO 1
+		// so, there are a few ways this can happen, either visibility is an integer, in which case capture group 3 is equal to that integer
+		visibility = parseInt(visMatches[3]);
+	} else if (visMatches[5] && visMatches[6]) {
+		// SCENERIO 2
+		// or it's JUST a fraction, in which case group 5 is the numerator, and group 6 is the denominator
+		visibility = parseInt(visMatches[5]) / parseInt(visMatches[6]);
+	} else if (visMatches[8] && visMatches[9] && visMatches[10]) {
+		// SCENERIO 3
+		// or it's a mixed number, because we're too cool for improper fractions and decimals. it's equal to group 8 + group 9 / group 10
+		visibility = parseInt(visMatches[8]) + (parseInt(visMatches[9]) / parseInt(visMatches[10]));
+	}
+
+
+	return { type, stationIdentifier, time, respectModifier, wind, visibility, visibilityLessThan };
 }

@@ -286,7 +286,7 @@ export function parseMETAR(metarStr: string): METARReport {
 	}
 
 	//runway visibility groups
-	let runwayVisibilities: RunwayVisibility[] = [];
+	const runwayVisibilities: RunwayVisibility[] = [];
 	const visRegex = /R(\d{2}(L|R|C)?)\/(M|P)?((\d+)|(\d+)V(\d+))FT/;
 	while (strSegments[0] && strSegments[0].match(visRegex)) {
 		const matches = strSegments[0].match(visRegex) as RegExpMatchArray;

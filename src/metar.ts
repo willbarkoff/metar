@@ -16,6 +16,12 @@ import { intensities, descriptors, precipitations, obscurations, phenomenon } fr
  */
 export type WindDirection = number | "calm" | "variable"
 
+/**
+ * VisibilityType represents the visibility type. `"more"` means that the visibility is higher than the specified number. `"less"`
+ * means that the visibility is less than the reported number. `"normal"` means that the visibility is equal to the reported number. 
+*/
+export type VisibilityType = "more" | "less" | "normal"
+
 export type ReportTime = {
 	/**
 	 * `day` represents the day of the month of the report, in UTC.
@@ -66,7 +72,33 @@ export type Wind = {
 	gust: number
 }
 
-export type METAR = {
+/**
+ * `RunwayVisibility` represeants the visiblity at a specific runway
+ * 
+ * @see FMH1 section 12.6.7
+ */
+export type RunwayVisibility = {
+	/**
+	 * `runway` is the name of the runway, for example `"27L"` or `"13"`.
+	 */
+	runway: string
+
+	/**
+	 * `visibility` is the visibility in feet, or the range of visibilities.
+	 */
+	visibility: number | [number, number]
+
+	/**
+	 * `visibilityType` represents how the {@link visibility} should be understood.
+	 * 
+	 * @see {@link VisibilityType} for more informaton about how data should be interperted.
+	 * @see FMH1 section 12.6.6
+	 * @see FMH1 chapter 6
+	 */
+	visibilityType: VisibilityType
+}
+
+export type METARReport = {
 	/**
 	 * `type` indicates the type of the report
 	 * 
@@ -121,13 +153,18 @@ export type METAR = {
 	visibility: number
 
 	/**
-	 * `visibilityLessThan` represents how the {@link visibility} should be understood. If it is `true`, then the 
-	 * visibility is less than the number reported in {@link visibility}, otherwise, it is equal to it.
+	 * `visibilityType` represents how the {@link visibility} should be understood.
 	 * 
+	 * @see {@link VisibilityType} for more informaton about how data should be interperted.
 	 * @see FMH1 section 12.6.6
 	 * @see FMH1 chapter 6
 	 */
-	visibilityLessThan: boolean
+	visibilityType: VisibilityType
+
+	/**
+	 * `runwayVisibilities` represents the visibilities at an airport's runways.
+	 */
+	runwayVisibilities: RunwayVisibility[]
 }
 
 /**
@@ -135,7 +172,7 @@ export type METAR = {
  * @param metarStr the string of the METAR
  * @returns the parsed METAR
  */
-export function parseMETAR(metarStr: string): METAR {
+export function parseMETAR(metarStr: string): METARReport {
 	const strSegments = metarStr.split(" ");
 
 	// first, we'll parse the first segment.
@@ -232,7 +269,7 @@ export function parseMETAR(metarStr: string): METAR {
 		throw new Error(`METARError: Invalid visibility specification: ${visibilityClause}`);
 	}
 
-	const visibilityLessThan = visMatches[1] == "M";
+	const visibilityType: VisibilityType = visMatches[1] == "M" ? "less" : "normal";
 
 	if (visMatches[3]) {
 		// SCENERIO 1
@@ -249,8 +286,29 @@ export function parseMETAR(metarStr: string): METAR {
 	}
 
 	//runway visibility groups
+	let runwayVisibilities: RunwayVisibility[] = [];
+	const visRegex = /R(\d{2}(L|R|C)?)\/(M|P)?((\d+)|(\d+)V(\d+))FT/;
+	while (strSegments[0] && strSegments[0].match(visRegex)) {
+		const matches = strSegments[0].match(visRegex) as RegExpMatchArray;
+		const runway = matches[1];
+		let visibility: number | [number, number] = 0;
+		if (matches[5]) {
+			visibility = parseInt(matches[5]);
+		} else {
+			visibility = [parseInt(matches[6]), parseInt(matches[7])];
+		}
+
+		let rvisType: VisibilityType = "normal";
+		if (matches[3] == "M") {
+			rvisType = "less";
+		} else if (matches[3] == "P") {
+			rvisType = "more";
+		}
+
+		runwayVisibilities.push({ runway, visibility, visibilityType: rvisType });
+		strSegments.shift();
+	}
 
 
-
-	return { type, stationIdentifier, time, respectModifier, wind, visibility, visibilityLessThan };
+	return { type, stationIdentifier, time, respectModifier, wind, visibility, visibilityType, runwayVisibilities };
 }

@@ -122,8 +122,8 @@ describe("visibilityParsing", () => {
 	it("should know when the visibility is less than a number", () => {
 		const minVis = parseMETAR(kjfkMinVis);
 		const lowVis = parseMETAR(kjfkLowVis);
-		expect(minVis.visibilityLessThan).to.equal(true);
-		expect(lowVis.visibilityLessThan).to.equal(false);
+		expect(minVis.visibilityType).to.equal("less");
+		expect(lowVis.visibilityType).to.equal("normal");
 		expect(minVis.visibility).to.equal(lowVis.visibility);
 	});
 
@@ -140,5 +140,9 @@ describe("visibilityParsing", () => {
 	it("should parse mixed number visibilities correctly", () => {
 		const mixVis = parseMETAR(kjfkMixVis);
 		expect(mixVis.visibility).to.equal(21 / 16);
+	});
+
+	it("should handle runway visibilities", () => {
+		//TODO
 	});
 });

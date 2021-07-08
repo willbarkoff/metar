@@ -8,7 +8,7 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -28,5 +28,20 @@ jobs:
 
       - name: "Run tests & check coverage"
         run: yarn coverage
-      # - name: "Report coverage"
-      #   uses: romeovs/lcov-reporter-action@v0.2.21
+      
+      - name: "Report coverage"
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          flag-name: node-${{ matrix.node-version }}
+          parallel: true
+
+  finish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Upload to Coveralls"
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        parallel-finished: true
